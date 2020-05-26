@@ -43,7 +43,7 @@ def update_chatlog(chatlog):
 		chatlog_to_append = pd.DataFrame(columns=['userId','full_name','message','role','_date','_time'])
 		for index, dat in agentchatlog.iterrows():
 			chatlog_to_append = chatlog_to_append.append(get_chatlog(dat),ignore_index = True,sort=False)
-		chatlog_to_append = chatlog_to_append.log[chatlog_to_append._date<=yesterday] 
+		chatlog_to_append = chatlog_to_append.loc[chatlog_to_append._date<=yesterday] 
 		chatlog = chatlog.append(chatlog_to_append, ignore_index=True, sort=False)
 	return chatlog
 
