@@ -1,2 +1,4 @@
 NTL
-
+data/
+.DS_Store
+.vscode
