@@ -341,7 +341,6 @@ def get_keywordcount(date, keywordlist, by='message'):
 # ************************************************************
 
 # Active users
-
 # Engaged users
 
 # New users
