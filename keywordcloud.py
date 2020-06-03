@@ -17,9 +17,9 @@ today = date.today()
 td = today.strftime("%Y-%m-%d")
 
 # Clean the chatlog to have only user conversation on specific date
-def clean_chatlog(chatlog, start_date:str=td, end_date:str=td):
+def clean_chatlog(chatlog, start_date: str=td, end_date: str=td):
     df = chatlog[['userId', 'message', 'role', '_date']] 
-    df = df.loc[df.role=='User']
+    df = df.loc[df.role == 'User']
     return df[(df._date >= start_date) & (df._date <= end_date)]
 
 # Utils
@@ -31,7 +31,8 @@ def get_th_tokens(text):
 
 # Clean undesired text
 def clean_text_1(text):
-    '''Make text lowercase, remove text in square brackets, remove punctuation and remove words containing numbers.'''
+    '''Make text lowercase, remove text in square brackets,
+    remove punctuation and remove words containing numbers.'''
     text = text.lower()
     text = re.sub('[.?]', '', text)
     text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
@@ -101,15 +102,15 @@ def clean_text_full(df):
 
 # Find top 20 keywords that has the highest TF-IDF average score
 def top_20_keywords(df):
-    vectorizer = TfidfVectorizer(tokenizer=get_th_tokens, token_pattern=None, ngram_range=(1,2)) 
-    vectorizer.fit(df['message']) 
-    feat_clean = vectorizer.transform(df['message']) 
-    feat_clean_array = feat_clean.toarray() 
-    avg_tfidf = feat_clean_array.sum(axis=0) / np.count_nonzero(feat_clean_array,axis=0) 
-    result_clean = pd.DataFrame() 
-    result_clean['word'] = vectorizer.get_feature_names() 
-    result_clean['avg_tfidf'] = avg_tfidf 
-    return result_clean.sort_values('avg_tfidf', ascending=False).head(20) 
+    vectorizer = TfidfVectorizer(tokenizer=get_th_tokens, token_pattern=None, ngram_range=(1,2))
+    vectorizer.fit(df['message'])
+    feat_clean = vectorizer.transform(df['message'])
+    feat_clean_array = feat_clean.toarray()
+    avg_tfidf = feat_clean_array.sum(axis=0) / np.count_nonzero(feat_clean_array,axis=0)
+    result_clean = pd.DataFrame()
+    result_clean['word'] = vectorizer.get_feature_names()
+    result_clean['avg_tfidf'] = avg_tfidf
+    return result_clean.sort_values('avg_tfidf', ascending=False).head(20)
 
 # Generate word list to for WordCloud process
 def gen_text_for_wordcloud(df):
@@ -120,14 +121,15 @@ def gen_text_for_wordcloud(df):
 # Generate WordCloud
 def gen_word_cloud(text):
     path = './font/THSarabunNew.ttf'
-    wordcloud = WordCloud(font_path=path, width = 800, height = 800, 
-                background_color ='white', 
-                min_font_size = 10, colormap='coolwarm',regexp = r"[ก-๙a-zA-Z']+", random_state=1).generate(text) 
+    wordcloud = WordCloud(font_path=path, width=800, height=800,
+                background_color='white',
+                min_font_size=10, colormap='coolwarm', regexp=r"[ก-๙a-zA-Z']+",
+                random_state=1).generate(text)
     # Plot the WordCloud image                        
-    plt.figure(figsize = (8, 8), facecolor = None) 
-    plt.imshow(wordcloud) 
-    plt.axis("off") 
-    plt.tight_layout(pad = 0) 
+    plt.figure(figsize=(8, 8), facecolor=None)
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.tight_layout(pad=0)
 
     plt.savefig('./WordCloud/keyword_{}.png'.format(td))
     print("WordCloud generated and stored in ./WordCloud")
