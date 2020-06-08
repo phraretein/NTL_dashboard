@@ -41,6 +41,9 @@ def count_postback_payload(df_postback):
     return df_payload.rename(columns={"postback_type": "access_count"}).head(20)
 
 # Main
+print("Processing data...")
 df_postback_clean = clean_postback(df_postback)
 df_postback_count = count_postback_payload(df_postback_clean)
+print('Exporting to /excel ...')
 df_postback_count.to_excel('./excel/postback_response_{}.xlsx'.format(td))
+print('Export complete.')
