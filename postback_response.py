@@ -28,14 +28,14 @@ def get_date(text):
 # Extract date from datetime column
 def clean_postback(df_postback, start_date: str=td, end_date: str=td):
     df_postback['date'] = df_postback.datetime.apply(lambda x: get_date(x))
-    df_postback = df_postback.loc[df_postback.postback_type=='button'].reset_index()
-    return df_postback[(df_postback.date >= start_date) & 
-    (df_postback.date <= end_date)]
+    df_postback['date_googlesheet'] = df_postback['date'].apply(lambda x: x.replace('-', ''))
+    df_postback = df_postback.loc[df_pb.postback_type=='button'].reset_index()
+    return df_postback[(df_postback.date >= start_date) & (df_postback.date <= end_date)]
 
 
 # Get postback_payload count
 def count_postback_payload(df_postback):
-    df_payload = df_postback.groupby('postback_payload').count()
+    df_payload = df_postback.groupby(['postback_payload','date_googlesheet']).count()
     df_payload.sort_values('postback_type', ascending=False, inplace=True)
     df_payload = df_payload[['postback_type']]
     return df_payload.rename(columns={"postback_type": "access_count"}).head(20)
