@@ -29,7 +29,7 @@ def get_date(text):
 def clean_postback(df_postback, start_date: str=td, end_date: str=td):
     df_postback['date'] = df_postback.datetime.apply(lambda x: get_date(x))
     df_postback['date_googlesheet'] = df_postback['date'].apply(lambda x: x.replace('-', ''))
-    df_postback = df_postback.loc[df_pb.postback_type=='button'].reset_index()
+    df_postback = df_postback.loc[df_postback.postback_type=='button'].reset_index()
     return df_postback[(df_postback.date >= start_date) & (df_postback.date <= end_date)]
 
 
