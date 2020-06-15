@@ -160,6 +160,7 @@ def gen_word_cloud(text):
     plt.axis("off") 
     plt.tight_layout(pad = 0) 
 
+
     plt.savefig('./WordCloud/keyword_{}.png'.format(td))
 
 

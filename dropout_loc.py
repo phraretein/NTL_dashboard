@@ -28,10 +28,10 @@ def clean_submit_to_agent(submit_to_agent, start_date: str=td, end_date: str=td)
 
 # Group dropout by last_bot_message, message, and date
 def group_dropout(submit_to_agent):
-    submit_to_agent_group = submit_to_agent.groupby(['last_bot_message','message','date_googlesheet']).count()
+    submit_to_agent_group = submit_to_agent.groupby(['date_googlesheet', 'last_bot_message', 'message']).count()
     submit_to_agent_group.sort_values('reason', ascending=False, inplace=True)
     submit_to_agent_group = submit_to_agent_group[['reason']]
-    return submit_to_agent_group.rename(columns={"reason": "occurences"})
+    return submit_to_agent_group.rename(columns={"reason": "occurences", "date_googlesheet": "date"})
 
 
 # Main
