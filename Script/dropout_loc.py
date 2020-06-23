@@ -2,14 +2,29 @@ import pandas as pd
 # import re
 # import string
 from datetime import date
+import pymongo
+from pymongo import MongoClient
 
 # Format time to match with the data
 today = date.today()
 td = today.strftime("%Y-%m-%d")
 
+
+# Connect to database
+def get_data_from_db():
+    murl = "mongodb://heroku_0n2r8pw1:ptuetisq6abh9ec3vhg0idisa8@ds249808-a0.mlab.com:49808,ds249808-a1.mlab.com:49808/heroku_0n2r8pw1?replicaSet=rs-ds249808"
+    client = MongoClient(murl)
+    dbname = 'heroku_0n2r8pw1'
+    cl = client[dbname]
+    submit_to_agent = cl.submit_to_agent
+
+    submit_to_agent = pd.DataFrame(list(submit_to_agent.find({})))
+    return submit_to_agent
+
+
 # Read data
 print("Reading submit_to_agent data...")
-submit_to_agent = pd.read_csv('./data/submit_to_agent_update.csv') 
+submit_to_agent = get_data_from_db()
 
 
 # Utils
@@ -36,8 +51,8 @@ def group_dropout(submit_to_agent):
 
 # Main
 print("Processing data...")
-submit_to_agent_clean = clean_submit_to_agent(submit_to_agent)
+submit_to_agent_clean = clean_submit_to_agent(submit_to_agent, '2020-03-20')
 dropout_group = group_dropout(submit_to_agent_clean)
 print("Exporting dropout group to /excel ...")
-dropout_group.to_excel('./excel/dropout_loc_{}.xlsx'.format(td), merge_cells=False)
+dropout_group.to_excel('../excel/dropout_loc_{}.xlsx'.format(td), merge_cells=False)
 print("Exported dropout group to excel. Data is up to {}.".format(td))
