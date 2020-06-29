@@ -634,35 +634,35 @@ def clean_chatlog(chat):
 	chat = chat.loc[chat.userId!='1379039449007314']
 	return chat
 
-print('read chatlog ..')
-chatlog = pd.read_pickle('../data/chatlog.p')
-# print('update chatlog ..')
-# chatlog = update_chatlog(chatlog)
+# print('read chatlog ..')
+# chatlog = pd.read_pickle('../data/chatlog.p')
+# # print('update chatlog ..')
+# # chatlog = update_chatlog(chatlog)
 
-print('clean chatlog ..')
-chatlog = clean_chatlog(chatlog)
+# print('clean chatlog ..')
+# chatlog = clean_chatlog(chatlog)
 
-print('read trained data ..')
-traindata = get_traindata()
+# print('read trained data ..')
+# traindata = get_traindata()
 
-print('read nlp_dashboard ..')
-nlp_dashboard = pd.read_pickle('../data/nlp_dashboard.p')
+# print('read nlp_dashboard ..')
+# nlp_dashboard = pd.read_pickle('../data/nlp_dashboard.p')
 
-print('read submit_to_agent ..')
-submit_to_agent = pd.read_pickle('../data/submit_to_agent.p')
+# print('read submit_to_agent ..')
+# submit_to_agent = pd.read_pickle('../data/submit_to_agent.p')
 
-print('format date ..')
+# print('format date ..')
 
-chatlog['date'] = chatlog._date
+# chatlog['date'] = chatlog._date
 
-nlp_dashboard['_date'] = nlp_dashboard['date'].astype('str').str[0:10]
-nlp_dashboard['distance'] = pd.to_numeric(nlp_dashboard['distance'])
+# nlp_dashboard['_date'] = nlp_dashboard['date'].astype('str').str[0:10]
+# nlp_dashboard['distance'] = pd.to_numeric(nlp_dashboard['distance'])
 
-submit_to_agent['_date'] = submit_to_agent['datetime'].astype('str').str[0:10]
+# submit_to_agent['_date'] = submit_to_agent['datetime'].astype('str').str[0:10]
 
-print('reformat message to str ..')
-chatlog.message = chatlog.message.astype(str)
+# print('reformat message to str ..')
+# chatlog.message = chatlog.message.astype(str)
 
-print('create botlog/userlog dataframes ..')
-botlog = chatlog.loc[chatlog.role=='Admin'].copy()
-userlog = chatlog.loc[chatlog.role=='User'].copy()
+# print('create botlog/userlog dataframes ..')
+# botlog = chatlog.loc[chatlog.role=='Admin'].copy()
+# userlog = chatlog.loc[chatlog.role=='User'].copy()

@@ -31,7 +31,6 @@ inq_nonflow.messages = inq_nonflow.messages.fillna('').apply(lambda x: x.split('
 
 
 
-
 # DATABASE
 # ************************************************************
 def update_chatlog(chatlog):
@@ -63,7 +62,7 @@ def get_chatlog(data):
 		mList.append(m)
 	dat = pd.DataFrame(data=mList,columns=['message','time','role'])
 	dat['userId'] = userID
-	dat['full_name'] = full_name
+    dat['full_name'] = full_name
 	dat['_date'] = dat['time'].astype('str').str[0:10]
 	dat['_time'] = dat['time'].astype('str').str[11:16]
 	return dat[['userId','full_name','message','role','_date','_time']]
@@ -431,7 +430,61 @@ def get_convermsg(date):
 	return chatlog_conv[chatlog_conv.role=='User'].groupby('conv').message.count().tolist()
 
 # Fallback Rate (FBR) (% of chatbot failures happened)
+def get_fbr_count(submit_to_agent):
+    # number of processed rows
+    n_processed = 0
+    # All counted
+    df_counted_all = pd.DataFrame(columns=['date', 'count'])
+    # Extract date from datetime string and remove dashes
+    df_to_process = submit_to_agent[n_processed:].copy()
+    df_to_process['date'] = df_to_process['datetime'].apply(lambda x: x[:10]).apply(lambda x: x.replace('-', ''))
+    # Count the number of instances by date group
+    df_counted = df_to_process.groupby('date')['reason'].apply(lambda x: (x == 'not_understand').sum()).reset_index(name='count')
+    df_counted_all = df_counted_all.append(df_counted)
+    # Update the latest number of processed rows
+    n_processed = submit_to_agent.shape[0]
+    df_counted_all['count'] = df_counted_all.groupby(['date'])['count'].transform('sum')
+    df_counted_all.rename(columns={"count": "no. of not_understand"})
+    return df_counted_all.drop_duplicates()
 
+# Number of messages accessing each carousel
+# Extract date from datetime column
+def clean_postback(df_postback, start_date: str=td, end_date: str=td):
+    df_postback['date'] = df_postback.datetime.apply(lambda x: get_date(x))
+    df_postback['date_googlesheet'] = df_postback['date'].apply(lambda x: x.replace('-', ''))
+    df_postback = df_postback.loc[df_postback.postback_type=='button'].reset_index()
+    return df_postback[(df_postback.date >= start_date) & (df_postback.date <= end_date)]
+
+
+# Get postback_payload count
+def count_postback_payload(df_postback):
+    df_payload = df_postback.groupby(['postback_payload','date_googlesheet']).count()
+    df_payload.sort_values('postback_type', ascending=False, inplace=True)
+    df_payload = df_payload[['postback_type']]
+    return df_payload.rename(columns={"postback_type": "access_count"}).head(20)
+
+
+# Dropout location
+# Utils
+def get_date(text):
+    date = text[:10]
+    return date
+
+
+# Clean data to match selection
+def clean_submit_to_agent(submit_to_agent, start_date: str=td, end_date: str=td):
+    submit_to_agent['date'] = submit_to_agent.datetime.apply(lambda x: get_date(x))
+    submit_to_agent['date_googlesheet'] = submit_to_agent['date'].apply(lambda x: x.replace('-', ''))
+    submit_to_agent = submit_to_agent[submit_to_agent.reason.isin(['not_understand', 'not_response'])]
+    return submit_to_agent[(submit_to_agent.date >= start_date) & (submit_to_agent.date <= end_date)]
+
+
+# Group dropout by last_bot_message, message, and date
+def group_dropout(submit_to_agent):
+    submit_to_agent_group = submit_to_agent.groupby(['date_googlesheet', 'last_bot_message', 'message']).count()
+    submit_to_agent_group.sort_values('reason', ascending=False, inplace=True)
+    submit_to_agent_group = submit_to_agent_group[['reason']]
+    return submit_to_agent_group.rename(columns={"reason": "occurences", "date_googlesheet": "date"})
 
 
 # User-satisfaction (Did the bot perform well? Y/N)

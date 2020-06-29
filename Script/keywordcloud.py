@@ -164,6 +164,24 @@ def gen_word_cloud(text):
     plt.savefig('./WordCloud/keyword_{}.png'.format(td))
 
 
+def post_picture(filename: str, filepath: str):
+    url = "https://api.botnoigroup.com/upload_images"
+
+    payload = {
+        'bot_id': '5db6a992b5162fcd709d76d6',
+        'before_url': ''
+        }
+
+    files =  {'file':(filename, open(filepath, 'rb'), "multipart/form-data")}
+
+    getdata = requests.post(url, data=payload, files=files)
+    
+    # Get image url
+    api_response_text = getdata.text.split()
+    response = api_response_text[2].replace("\"", "")
+    response_url = response.replace(",", "")
+    return response_url
+
 # Main
 print("Processing data...")
 chatlog_clean = clean_chatlog(chatlog)
