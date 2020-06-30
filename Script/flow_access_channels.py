@@ -62,7 +62,9 @@ def get_users_channel(date: str, ad_id, chatlog):
 
 
 def get_inq_flow(date):
-    inq_flow = pd.DataFrame(columns=['flow','state','key','description', 'count','organic_count', 'ad_count', 'ref_count', 'drop'])
+    inq_flow = pd.DataFrame(columns=['flow','state', 'key', 'description', 
+    'count', 'organic_count', 'ad_count', 'ref_count', 'drop', 'org_drop', 
+    'ad_drop', 'ref_drop'])
     inq_flow = inq_flow.append(get_ins_lead(date),ignore_index=True)
 
     return inq_flow
@@ -98,16 +100,20 @@ def get_ins_lead(date):
     userlist = []
     countlist = []
     droplist = []
+    dropcountlist = []
     org_countlist = []
     ad_countlist = []
     ref_countlist = []
-    org_droplist = []
-    ad_droplist = []
-    ref_droplist = []
+    orglist = []
+    adlist = []
+    reflist = []
+    orgdroplist = []
+    addroplist = []
+    refdroplist = []
+    org_dropcountlist = []
+    ad_dropcountlist = []
+    ref_dropcountlist = []
     org_userlist, ad_userlist, ref_userlist = get_users_channel(date, ad_id, chatlog)
-#     orglist = []
-#     adlist = []
-#     reflist = []
     ins_lead = inq_flow.loc[inq_flow.key.str.contains('ins_lead')]
     keylist = ins_lead.key.tolist()
     keep_count = ins_lead.keep_count.tolist()
@@ -141,19 +147,55 @@ def get_ins_lead(date):
 
     # Dropout ins_lead-00 to ins_lead-10.1x
     for i in range(0,12):
-        droplist.append(len(list(diff(userlist[i],userlist[i+1],unique=True)))*keep_drop[i])
-
+        droplist.append(list(diff(userlist[i],userlist[i+1],unique=True)))
+        orgdroplist.append(intersect(org_userlist, droplist))
+        addroplist.append(intersect(ad_userlist, droplist))
+        refdroplist.append(intersect(ref_userlist, droplist))
+        dropcountlist.append(len(droplist[i])*keep_drop[i])
+        org_dropcountlist.append(len(orgdroplist[i])*keep_drop[i])
+        ad_dropcountlist.append(len(addroplist[i]) *keep_drop[i])
+        ref_dropcountlist.append(len(refdroplist[i]) *keep_drop[i])
+        
     # Dropout ins_lead-10.1	
     drop101 = list(intersect(ins101x,diff(ins10,ins11,unique=True),unique=True))
     droplist.append(len(drop101))
+    orgdroplist.append(intersect(org_userlist, droplist))
+    addroplist.append(intersect(ad_userlist, droplist))
+    refdroplist.append(intersect(ref_userlist, droplist))
+    dropcountlist.append(len(droplist[i])*keep_drop[i])
+    org_dropcountlist.append(len(orgdroplist[i])*keep_drop[i])
+    ad_dropcountlist.append(len(addroplist[i]) *keep_drop[i])
+    ref_dropcountlist.append(len(refdroplist[i]) *keep_drop[i])
+
     # Dropout ins_lead-10.2
     drop102 = list(diff(diff(ins10,ins11,unique=True),drop101,unique=True))
     droplist.append(len(drop102))
+    orgdroplist.append(intersect(org_userlist, droplist))
+    addroplist.append(intersect(ad_userlist, droplist))
+    refdroplist.append(intersect(ref_userlist, droplist))
+    dropcountlist.append(len(droplist[i])*keep_drop[i])
+    org_dropcountlist.append(len(orgdroplist[i])*keep_drop[i])
+    ad_dropcountlist.append(len(addroplist[i]) *keep_drop[i])
+    ref_dropcountlist.append(len(refdroplist[i]) *keep_drop[i])
+
     # Dropout ins_lead-11
     droplist.append(0)
+    orgdroplist.append(intersect(org_userlist, droplist))
+    addroplist.append(intersect(ad_userlist, droplist))
+    refdroplist.append(intersect(ref_userlist, droplist))
+    dropcountlist.append(len(droplist[i])*keep_drop[i])
+    org_dropcountlist.append(len(orgdroplist[i])*keep_drop[i])
+    ad_dropcountlist.append(len(addroplist[i]) *keep_drop[i])
+    ref_dropcountlist.append(len(refdroplist[i]) *keep_drop[i])
 
 
-    ins_lead['drop'] = droplist
+    ins_lead['drop'] = dropcountlist
+    # ins_lead['user_drop_organic'] = orgdroplist
+    ins_lead['org_drop'] = org_dropcountlist
+    # ins_lead['user_drop_ad'] = addroplist
+    ins_lead['ad_drop'] = ad_dropcountlist
+    # ins_lead['user_drop_ref'] = refdroplist
+    ins_lead['ref_drop'] = ref_dropcountlist
 
     ins_lead['flow'] = ins_lead['key'].apply(lambda x: x.split('-')[0])
     ins_lead['state'] = ins_lead['key'].apply(lambda x: x.split('-')[1])
@@ -161,7 +203,8 @@ def get_ins_lead(date):
     # Remove the entries used for calculations
     ins_lead = ins_lead.loc[(ins_lead.keep_count==1)|(ins_lead.keep_drop==1)]
 
-    return ins_lead[['flow','state','key','description', 'count', 'organic_count', 'ad_count', 'ref_count', 'drop']]
+    return ins_lead[['flow','state','key','description', 'count', 'organic_count', 
+                     'ad_count', 'ref_count', 'drop', 'org_drop', 'ad_drop', 'ref_drop']]
 
 
 inq_flow = pd.read_excel('../excel/inquiry_report.xlsx',sheet_name='Flow')
