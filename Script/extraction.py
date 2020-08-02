@@ -452,22 +452,22 @@ def timeinterval(starttime,endtime):
 
 # ทำ cron job
 
-print('read chatlog ..')
-chatlog = pd.read_pickle('./data/chatlog.p')
-# print('update chatlog ..')
-# chatlog = update_chatlog(chatlog)
-print('read nlp_dashboard ..')
-nlp_dashboard = pd.read_pickle('./data/nlp_dashboard.p')
+# print('read chatlog ..')
+# chatlog = pd.read_pickle('./data/chatlog.p')
+# # print('update chatlog ..')
+# # chatlog = update_chatlog(chatlog)
+# print('read nlp_dashboard ..')
+# nlp_dashboard = pd.read_pickle('./data/nlp_dashboard.p')
 
-print('read submit_to_agent ..')
-submit_to_agent = pd.read_pickle('./data/submit_to_agent.p')
+# print('read submit_to_agent ..')
+# submit_to_agent = pd.read_pickle('./data/submit_to_agent.p')
 
-print('format date ..')
+# print('format date ..')
 
-chatlog['date'] = chatlog._date
+# chatlog['date'] = chatlog._date
 
-nlp_dashboard['_date'] = pd.to_datetime(nlp_dashboard['date'])
-nlp_dashboard['_date'] = nlp_dashboard['_date'].dt.strftime('%Y-%m-%d')
+# nlp_dashboard['_date'] = pd.to_datetime(nlp_dashboard['date'])
+# nlp_dashboard['_date'] = nlp_dashboard['_date'].dt.strftime('%Y-%m-%d')
 
-submit_to_agent['_date'] = pd.to_datetime(submit_to_agent['datetime'])
-submit_to_agent['_date'] = submit_to_agent['_date'].dt.strftime('%Y-%m-%d')
+# submit_to_agent['_date'] = pd.to_datetime(submit_to_agent['datetime'])
+# submit_to_agent['_date'] = submit_to_agent['_date'].dt.strftime('%Y-%m-%d')

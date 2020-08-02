@@ -27,11 +27,10 @@ day_ago_str = day_ago.strftime('%Y-%m-%d')
 # end_period_str = day_ago.strftime('%Y-%m-%d 23:59:59')
 
 # when you need crontab custom period
-MIN_DATE = "2020-05-31"
-MAX_DATE = "2020-06-26"
+MIN_DATE = '2020-06-29'
+MAX_DATE = '2020-08-01'
 start_period_str = MIN_DATE + " 00:00:00"
 end_period_str = MAX_DATE + " 23:59:59"
-
 
 time_tmp = time.time()
 print(start_period_str, end_period_str)
@@ -58,4 +57,4 @@ botlog = chatlog.loc[chatlog.role == 'Admin'].copy()
 chatlog = chatlog[['userId', 'full_name', 'message', 'role', 'time', '_date', '_time']]
 
 
-chatlog.to_csv("../excel/chatlog.csv", index=False)
+chatlog.to_csv("../excel/chatlog_jul.csv", index=False)
