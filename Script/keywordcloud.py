@@ -118,6 +118,8 @@ def remove_emoji(string):
 
 # Combine all the text cleaning functions
 def clean_text_full(df):
+    df['userId'] = df.userId.astype(str)
+    df['message'] = df['message'].astype(str)
     df = df.groupby(['userId'])['message'].apply(','.join).reset_index()
     df['message'] = df['message'].apply(lambda x: clean_text_1(x))
     df['message'] = df['message'].apply(lambda x: remove_emoji(x))
@@ -188,11 +190,18 @@ chatlog_clean = clean_chatlog(chatlog)
 chatlog_text_clean = clean_text_full(chatlog_clean)
 top_keywords = top_20_keywords(chatlog_text_clean)
 
-print("Exporting top keywords to /excel ...")
-top_keywords.to_excel('./excel/topwords_freq_{}.xlsx'.format(td))
-print("Exported top keywords to excel. Data is up to {}.".format(td))
 
 print("Generating Wordcloud...")
 text_for_wordcloud = gen_text_for_wordcloud(top_keywords)
 gen_word_cloud(text_for_wordcloud)
 print("Successfully export wordcloud to /WordCloud.")
+
+wc_location = post_picture(#filename,#filepath)
+header_df = pd.DataFrame([[td.replace("-", ""), '-', '0', wc_location, '1']],
+columns=['date', 'word', 'avg_tfidf', 'location', 'pic'])
+
+print("Exporting top keywords to /excel ...")
+final_df = pd.concat([header_df, top_keywords])
+final_df['date'] = td.replace("-", "")
+final_df.to_excel('./excel/topwords_freq_{}.xlsx'.format(td))
+print("Exported top keywords to excel. Data is up to {}.".format(td))
